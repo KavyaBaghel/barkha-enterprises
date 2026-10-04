@@ -1,53 +1,211 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="color-scheme" content="light">
+<meta name="color-scheme" content="dark light">
+<meta name="theme-color" content="#14161a">
 <title>Barkha Enterprises – Cloud Backup</title>
 <style>
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;background:#fff;color:#14161a;font:17px/1.45 Inter,system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}
-main{max-width:560px;margin:0 auto;padding:calc(18px + env(safe-area-inset-top,0px)) 18px calc(40px + env(safe-area-inset-bottom,0px))}
-h1{font-size:22px;margin:0 0 4px}
-p{margin:0 0 14px;color:#4a4f58}
-.c{border:1px solid #e8eaee;border-radius:18px;padding:16px;margin:0 0 14px;background:#f6f7f9}
-label{display:block;font-size:13px;font-weight:700;color:#7a808a;text-transform:uppercase;letter-spacing:.5px;margin:0 0 6px}
-input{width:100%;padding:14px;font:inherit;font-size:22px;letter-spacing:6px;text-align:center;border:1.5px solid #e8eaee;border-radius:14px;background:#fff;outline:0}
-input:focus{border-color:#14161a}
-button,.a{display:block;width:100%;padding:16px;margin:10px 0 0;border:0;border-radius:16px;background:#14161a;color:#fff;font:inherit;font-size:18px;font-weight:600;text-align:center;text-decoration:none}
-button.o,.a.o{background:#fff;color:#14161a;border:1.5px solid #14161a}
-button:disabled{opacity:.5}
-#msg{margin:14px 0 0;padding:14px;border-radius:14px;background:#14161a;color:#fff;font-weight:600;display:none;white-space:pre-line}
+:root{--bg:#14161a;--fg:#14161a;--mu:#7a808a;--ln:#e8eaee;--sf:#f6f7f9}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none}
+html,body{margin:0;height:100%;font:17px/1.45 Inter,system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;overflow-x:hidden}
+body{background:var(--bg);color:#fff;transition:background .45s}
+body.in{background-color:#fff;background-image:radial-gradient(circle,#cfd3db 1px,transparent 1.4px);background-size:24px 24px;color:var(--fg)}
+.scr{min-height:100%;display:flex;flex-direction:column;align-items:center;padding:calc(34px + env(safe-area-inset-top,0px)) 22px calc(28px + env(safe-area-inset-bottom,0px));animation:up .5s cubic-bezier(.16,1,.3,1) both}
+[hidden]{display:none!important}
+@keyframes up{from{opacity:0;transform:translateY(14px)}}
+@keyframes shake{20%{transform:translateX(-12px)}40%{transform:translateX(10px)}60%{transform:translateX(-7px)}80%{transform:translateX(4px)}}
+@keyframes pop{from{opacity:0;transform:scale(.94) translateY(10px)}}
+@keyframes fade{from{opacity:0}}
+
+/* lock screen */
+#lock{position:relative;overflow:hidden}
+#lock:before{content:"";position:absolute;right:-90px;top:-90px;width:300px;height:300px;border-radius:50%;background:rgba(255,255,255,.05)}
+#lock:after{content:"";position:absolute;left:-120px;bottom:-120px;width:340px;height:340px;border-radius:50%;background:rgba(255,255,255,.04)}
+#lock>*{position:relative;z-index:1}
+.logo{width:68px;height:68px;border-radius:21px;background:#fff;color:#14161a;display:grid;place-items:center;font-weight:800;font-size:32px;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+#lock h1{margin:18px 0 4px;font-size:24px;letter-spacing:.2px}
+.sub{margin:0;color:rgba(255,255,255,.62);font-size:15px;text-align:center}
+.dots{display:flex;gap:16px;margin:34px 0 12px;height:16px}
+.dots i{width:15px;height:15px;border-radius:50%;border:2px solid rgba(255,255,255,.55);transition:background .15s,transform .2s cubic-bezier(.34,1.56,.64,1),border-color .2s}
+.dots i.f{background:#fff;border-color:#fff;transform:scale(1.15)}
+.dots.bad{animation:shake .45s}
+.dots.bad i{border-color:#ff7b6e;background:#ff7b6e}
+.hint{min-height:44px;text-align:center;font-size:14.5px;color:rgba(255,255,255,.62);max-width:290px}
+.hint.err{color:#ff9d93;font-weight:600}
+.pad{display:grid;grid-template-columns:repeat(3,78px);gap:16px 22px;margin-top:auto;padding-top:14px}
+.k{width:78px;height:78px;border-radius:50%;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.08);color:#fff;font:inherit;font-size:30px;font-weight:500;display:grid;place-items:center;padding:0;margin:0;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);transition:background .15s,transform .15s cubic-bezier(.34,1.56,.64,1)}
+.k:active{background:rgba(255,255,255,.28);transform:scale(.92)}
+.k.g{background:none;border-color:transparent;-webkit-backdrop-filter:none;backdrop-filter:none}
+.k svg{width:28px;height:28px}
+.k:disabled{opacity:.35}
+.lk{margin-top:22px;color:rgba(255,255,255,.4);font-size:12.5px;display:flex;align-items:center;gap:6px}
+.lk svg{width:13px;height:13px}
+
+/* unlocked */
+#home{max-width:560px;margin:0 auto;width:100%;align-items:stretch}
+.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.br{display:flex;align-items:center;gap:12px}
+.br .logo{width:44px;height:44px;border-radius:13px;font-size:21px;box-shadow:none;background:#14161a;color:#fff}
+.br b{display:block;font-size:19px;line-height:1.1}
+.br small{color:var(--mu);font-size:13px}
+.pill{border:1px solid var(--ln);background:var(--sf);padding:9px 15px;border-radius:20px;font:inherit;font-size:15px;font-weight:600;color:var(--fg);display:flex;align-items:center;gap:6px;margin:0}
+.pill svg{width:15px;height:15px}
+.hero{background:#14161a;color:#fff;border-radius:22px;padding:20px 18px;margin-bottom:14px;position:relative;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,.18)}
+.hero:after{content:"";position:absolute;right:-40px;top:-40px;width:150px;height:150px;border-radius:50%;background:rgba(255,255,255,.07)}
+.hero small{display:block;opacity:.65;font-size:13px;position:relative;z-index:1}
+.hero b{display:block;font-size:30px;line-height:1.15;margin:2px 0 4px;position:relative;z-index:1}
+.hero .row{display:flex;gap:10px;margin-top:14px;position:relative;z-index:1}
+.hero .row span{background:rgba(255,255,255,.14);border-radius:20px;padding:5px 12px;font-size:13px;font-weight:600}
+.btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:18px 12px;margin:0 0 12px;border:0;border-radius:18px;background:#14161a;color:#fff;font:inherit;font-size:18px;font-weight:600;text-align:center;text-decoration:none;box-shadow:0 4px 14px rgba(0,0,0,.15);transition:transform .2s cubic-bezier(.34,1.56,.64,1)}
+.btn:active{transform:scale(.97)}
+.btn.o{background:#fff;color:#14161a;border:1.5px solid #14161a;box-shadow:none}
+.btn:disabled{opacity:.5}
+.btn svg{width:22px;height:22px;flex:none}
+.note{color:var(--mu);font-size:13.5px;text-align:center;margin:4px 8px 16px}
+#msg{display:none;margin:0 0 14px;padding:14px 16px;border-radius:16px;background:#14161a;color:#fff;font-weight:600;white-space:pre-line;animation:pop .35s cubic-bezier(.16,1,.3,1)}
 #msg.err{background:#c0392b}
-small{color:#7a808a;display:block;margin-top:10px}
-</style></head><body><main>
-<h1>Cloud Backup</h1>
-<p>Barkha Enterprises. Saves your bills to the cloud, and brings them back on this or another phone.</p>
-<div class="c">
-<label for="pin">PIN</label>
-<input id="pin" type="password" inputmode="numeric" autocomplete="off" maxlength="6" placeholder="••••••">
-<button id="bs">Save this phone to cloud</button>
-<button id="bl" class="o">Load from cloud to this phone</button>
-<small>Photos of goods and paper bills are not saved to the cloud. Five wrong PIN tries lock it for 15 minutes.</small>
-</div>
-<div id="msg"></div>
-<a class="a o" href="./index.html">Open the app</a>
-</main>
+#msg.ok{background:#14161a}
+
+/* confirm sheet */
+.mo{position:fixed;inset:0;z-index:50;background:rgba(20,22,26,.4);-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px);display:grid;place-items:center;padding:24px;animation:fade .2s}
+.md{background:#fff;color:var(--fg);border-radius:22px;padding:24px;max-width:360px;width:100%;box-shadow:0 24px 70px rgba(0,0,0,.25);animation:pop .35s cubic-bezier(.16,1,.3,1)}
+.md h2{margin:0 0 8px;font-size:19px}
+.md p{margin:0 0 18px;font-size:16px;color:#4a4f58}
+.md .r{display:flex;gap:10px}
+.md .r .btn{margin:0;padding:14px 8px;font-size:16px;box-shadow:none}
+@media (max-height:700px){.pad{gap:10px 20px;grid-template-columns:repeat(3,66px)}.k{width:66px;height:66px;font-size:26px}.dots{margin:22px 0 8px}.lk{margin-top:12px}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style></head><body>
+
+<section id="lock" class="scr">
+  <div class="logo">B</div>
+  <h1>Barkha Enterprises</h1>
+  <p class="sub">Enter your 6-digit PIN to open cloud backup</p>
+  <div class="dots" id="dots"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+  <div class="hint" id="hint"></div>
+  <div class="pad" id="pad"></div>
+  <div class="lk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Locked for 15 minutes after 5 wrong tries</div>
+</section>
+
+<section id="home" class="scr" hidden>
+  <div class="top">
+    <div class="br"><div class="logo">B</div><div><b>Cloud Backup</b><small>Barkha Enterprises</small></div></div>
+    <button class="pill" id="relock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Lock</button>
+  </div>
+  <div class="hero">
+    <small>Cloud copy</small>
+    <b id="cb">–</b>
+    <small id="ct">–</small>
+    <div class="row"><span id="pb">This phone: –</span></div>
+  </div>
+  <div id="msg"></div>
+  <button class="btn" id="bs"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M7 9l5-5 5 5M4 20h16"/></svg>Save this phone to cloud</button>
+  <button class="btn o" id="bl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v12M7 11l5 5 5-5M4 20h16"/></svg>Load cloud copy</button>
+  <p class="note">Photos of goods and paper bills stay on the phone and are not saved to the cloud.</p>
+  <a class="btn o" href="./index.html">Open the app</a>
+</section>
+
 <script>
 var URL_='https://xkzmvyajptiiqvmjsuvk.supabase.co',KEY='sb_publishable_fL6curYH2-P1T1qrs7D6Jw_CC90K8h0';
 function $(i){return document.getElementById(i)}
-function say(m,e){var x=$('msg');x.textContent=m;x.className=e?'err':'';x.style.display='block'}
-function busy(b){$('bs').disabled=$('bl').disabled=b}
-function pin(){var p=$('pin').value.trim();if(!/^\d{6}$/.test(p)){say('Enter the 6-digit PIN.',1);return null}return p}
+var pin='',okPin=null,cloud=null,busy=false,until=0,tick=null;
+
+/* keypad */
+(function(){
+  var h='';
+  [1,2,3,4,5,6,7,8,9].forEach(function(n){h+='<button class="k" data-d="'+n+'">'+n+'</button>'});
+  h+='<button class="k g" disabled></button><button class="k" data-d="0">0</button>'
+   +'<button class="k g" data-d="x" aria-label="Delete"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 5H9l-6 7 6 7h12a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1z"/><path d="M17 9.5l-5 5M12 9.5l5 5"/></svg></button>';
+  $('pad').innerHTML=h;
+})();
+$('pad').addEventListener('click',function(e){var b=e.target.closest('[data-d]');if(!b)return;key(b.dataset.d)});
+document.addEventListener('keydown',function(e){if($('lock').hidden)return;if(/^\d$/.test(e.key))key(e.key);else if(e.key==='Backspace')key('x')});
+function vib(n){try{navigator.vibrate&&navigator.vibrate(n)}catch(e){}}
+function dots(bad){
+  var d=$('dots'),s=d.children;
+  for(var i=0;i<6;i++)s[i].className=i<pin.length?'f':'';
+  d.classList.remove('bad');
+  if(bad){void d.offsetWidth;d.classList.add('bad')}
+}
+function hint(m,e){var h=$('hint');h.textContent=m||'';h.className='hint'+(e?' err':'')}
+function key(k){
+  if(busy||Date.now()<until)return;
+  vib(8);
+  if(k==='x'){pin=pin.slice(0,-1);dots();hint('');return}
+  if(pin.length>=6)return;
+  pin+=k;dots();
+  if(pin.length===6)setTimeout(unlock,120);
+}
 async function rpc(fn,body){
   var r=await fetch(URL_+'/rest/v1/rpc/'+fn,{method:'POST',headers:{'Content-Type':'application/json','apikey':KEY},body:JSON.stringify(body)});
   var j=null;try{j=await r.json()}catch(e){}
   if(!r.ok)throw new Error((j&&(j.message||j.hint))||('Server error '+r.status));
   return j;
 }
-function bad(j){
-  if(j.error==='locked'){var u=j.until?new Date(j.until).toLocaleTimeString():'';return 'Too many wrong tries. Locked until '+u+'.'}
-  if(j.error==='wrong_pin')return 'Wrong PIN. '+j.tries_left+' tries left.';
-  return 'Could not continue.';
+function startLock(iso){
+  until=iso?Date.parse(iso):Date.now()+15*60000;
+  clearInterval(tick);
+  function t(){
+    var s=Math.max(0,Math.ceil((until-Date.now())/1000));
+    if(!s){clearInterval(tick);hint('');setPad(false);return}
+    hint('Too many wrong tries. Try again in '+Math.floor(s/60)+':'+String(s%60).padStart(2,'0'),1);
+  }
+  setPad(true);t();tick=setInterval(t,1000);
+}
+function setPad(x){var b=$('pad').querySelectorAll('.k');for(var i=0;i<b.length;i++)if(b[i].dataset.d)b[i].disabled=x}
+function wrong(j){
+  vib([40,60,40]);dots(true);
+  var m=pin;pin='';
+  setTimeout(function(){dots()},450);
+  if(j&&j.error==='locked')startLock(j.until);
+  else if(j&&j.error==='wrong_pin')hint('Wrong PIN. '+j.tries_left+(j.tries_left===1?' try':' tries')+' left.',1);
+  else hint('Could not continue.',1);
+}
+async function unlock(){
+  busy=true;hint('Checking…');
+  try{
+    var j=await rpc('cloud_load',{p_pin:pin});
+    if(j.ok){okPin=pin;cloud=j;pin='';dots();hint('');vib(20);showHome()}
+    else wrong(j);
+  }catch(e){pin='';dots();hint('No connection. Check the internet and try again.',1)}
+  busy=false;
+}
+
+/* unlocked screen */
+function nb(s){try{return JSON.parse(s||'[]').length}catch(e){return 0}}
+function localCount(){return nb(localStorage.getItem('bk_bills'))}
+function when(iso){return iso?new Date(iso).toLocaleString('en-IN',{day:'numeric',month:'short',year:'numeric',hour:'numeric',minute:'2-digit'}):''}
+function paint(){
+  var d=cloud&&cloud.data&&cloud.data.d;
+  if(d){var n=nb(d.bk_bills);$('cb').textContent=n+(n===1?' bill':' bills');$('ct').textContent='Saved '+when(cloud.updated_at)}
+  else{$('cb').textContent='Nothing saved yet';$('ct').textContent='Tap "Save this phone to cloud"'}
+  var l=localCount();$('pb').textContent='This phone: '+l+(l===1?' bill':' bills');
+}
+function showHome(){
+  $('lock').hidden=true;$('home').hidden=false;document.body.classList.add('in');
+  document.querySelector('meta[name=theme-color]').content='#ffffff';
+  $('msg').style.display='none';paint();window.scrollTo(0,0);
+}
+function showLock(){
+  okPin=null;cloud=null;pin='';dots();hint('');
+  $('home').hidden=true;$('lock').hidden=false;document.body.classList.remove('in');
+  document.querySelector('meta[name=theme-color]').content='#14161a';
+  if(Date.now()<until)startLock(new Date(until).toISOString());
+}
+$('relock').onclick=showLock;
+function say(m,k){var x=$('msg');x.textContent=m;x.className=k||'ok';x.style.display='block';x.style.animation='none';void x.offsetWidth;x.style.animation=''}
+function lockBtns(b){$('bs').disabled=$('bl').disabled=b}
+function ask(title,body,ok){
+  return new Promise(function(res){
+    var m=document.createElement('div');m.className='mo';
+    m.innerHTML='<div class="md"><h2></h2><p></p><div class="r"><button class="btn o" id="mc">Cancel</button><button class="btn" id="mk"></button></div></div>';
+    m.querySelector('h2').textContent=title;m.querySelector('p').textContent=body;m.querySelector('#mk').textContent=ok;
+    document.body.appendChild(m);
+    function d(v){m.remove();res(v)}
+    m.querySelector('#mk').onclick=function(){d(true)};
+    m.querySelector('#mc').onclick=function(){d(false)};
+    m.onclick=function(e){if(e.target===m)d(false)};
+  });
 }
 function snap(){
   var o={};
@@ -55,32 +213,40 @@ function snap(){
   try{var b=JSON.parse(o.bk_bills||'[]');b.forEach(function(x){x.goods='';x.paper=''});o.bk_bills=JSON.stringify(b)}catch(e){}
   return {app:'barkha',d:o,at:new Date().toISOString()};
 }
+function bad(j){
+  if(j.error==='locked'){startLock(j.until);showLock();return}
+  if(j.error==='wrong_pin'){showLock();return}
+  say('Could not continue.','err');
+}
 $('bs').onclick=async function(){
-  var p=pin();if(!p)return;busy(true);say('Saving…');
+  lockBtns(true);say('Saving…');
   try{
-    var s=snap(),n=0;try{n=JSON.parse(s.d.bk_bills||'[]').length}catch(e){}
-    var j=await rpc('cloud_save',{p_pin:p,p_data:s});
-    if(!j.ok)say(bad(j),1);else say('Saved to cloud ('+n+' bills).\n'+new Date().toLocaleString());
-  }catch(e){say('Could not save: '+e.message,1)}
-  busy(false);
+    var s=snap(),n=nb(s.d.bk_bills);
+    var j=await rpc('cloud_save',{p_pin:okPin,p_data:s});
+    if(!j.ok){bad(j)}
+    else{cloud={ok:true,data:s,updated_at:new Date().toISOString()};paint();vib([15,40,15]);say('Saved to cloud: '+n+(n===1?' bill.':' bills.'))}
+  }catch(e){say('Could not save: '+e.message,'err')}
+  lockBtns(false);
 };
 $('bl').onclick=async function(){
-  var p=pin();if(!p)return;busy(true);say('Loading…');
+  lockBtns(true);say('Checking the cloud…');
   try{
-    var j=await rpc('cloud_load',{p_pin:p});
-    if(!j.ok){say(bad(j),1);busy(false);return}
+    var j=await rpc('cloud_load',{p_pin:okPin});
+    if(!j.ok){bad(j);lockBtns(false);return}
+    cloud=j;paint();
     var d=j.data;
-    if(!d||d.app!=='barkha'||!d.d){say('The cloud is empty. Save from a phone first.',1);busy(false);return}
-    var nb=0;try{nb=JSON.parse(d.d.bk_bills||'[]').length}catch(e){}
-    var when=j.updated_at?new Date(j.updated_at).toLocaleString():'';
-    if(!confirm('This replaces the bills on this phone with the cloud copy ('+nb+' bills, saved '+when+'). Continue?')){say('Cancelled. Nothing changed.');busy(false);return}
+    if(!d||d.app!=='barkha'||!d.d){say('The cloud is empty. Save from a phone first.','err');lockBtns(false);return}
+    var n=nb(d.d.bk_bills);
+    $('msg').style.display='none';
+    var go=await ask('Replace bills on this phone?','This phone has '+localCount()+' bills. The cloud copy has '+n+' bills, saved '+when(j.updated_at)+'. Loading replaces what is on this phone.','Load');
+    if(!go){lockBtns(false);return}
     var keep={};
     try{JSON.parse(localStorage.getItem('bk_bills')||'[]').forEach(function(b){if(b.goods||b.paper)keep[b.id]={goods:b.goods||'',paper:b.paper||''}})}catch(e){}
     try{localStorage.setItem('sync_undo',JSON.stringify({at:new Date().toISOString(),bills:localStorage.getItem('bk_bills')}))}catch(e){}
     Object.keys(d.d).forEach(function(k){if(k.indexOf('bk_')===0)localStorage.setItem(k,d.d[k])});
     try{var b2=JSON.parse(localStorage.getItem('bk_bills')||'[]');b2.forEach(function(b){var m=keep[b.id];if(m){b.goods=m.goods;b.paper=m.paper}});localStorage.setItem('bk_bills',JSON.stringify(b2))}catch(e){}
-    say('Done. '+nb+' bills loaded on this phone. Tap "Open the app".');
-  }catch(e){say('Could not load: '+e.message,1)}
-  busy(false);
+    paint();vib([15,40,15]);say('Done. '+n+(n===1?' bill':' bills')+' loaded on this phone. Tap "Open the app".');
+  }catch(e){say('Could not load: '+e.message,'err')}
+  lockBtns(false);
 };
 </script></body></html>
